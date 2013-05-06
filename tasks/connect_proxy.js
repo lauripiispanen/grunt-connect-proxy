@@ -10,12 +10,21 @@
 var utils = require('../lib/utils');
 
 module.exports = function(grunt) {
-  grunt.registerTask('configureProxies', 'Configure any specified connect proxies.', function() {
+  grunt.registerTask('configureProxies', 'Configure any specified connect proxies.', function(config) {
     // setup proxy
     var _ = grunt.util._;
     var httpProxy = require('http-proxy');
     var proxyOption;
-    var proxyOptions = grunt.config('connect.proxies') || [];
+    var connectOptions;
+    if (config) {
+        connectOptions = grunt.config('connect.'+config) || [];
+    } else {
+        connectOptions = grunt.config('connect') || [];
+    }
+    if (!connectOptions.appendProxies) {
+        utils.reset();
+    }
+    var proxyOptions = connectOptions.proxies;
     proxyOptions.forEach(function(proxy) {
         proxyOption = _.defaults(proxy,  {
             port: 80,
